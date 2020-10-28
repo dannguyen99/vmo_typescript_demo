@@ -22,4 +22,8 @@ export default class UserService {
         users.deleteOne(query, callback);
     }
 
+    public getUsers(callback:any){
+        users.find({}, callback);
+    }
+
 }

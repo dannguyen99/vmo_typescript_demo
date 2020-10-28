@@ -86,9 +86,9 @@ export class UserController {
                         is_deleted: req.body.is_deleted ? req.body.is_deleted : user_data.is_deleted,
                         modification_notes: user_data.modification_notes
                     };
-                    this.user_service.updateUser(user_params, (err: any) => {
-                        if (err) {
-                            mongoError(err, res);
+                    this.user_service.updateUser(user_params, (error: any) => {
+                        if (error) {
+                            mongoError(error, res);
                         } else {
                             successResponse('update user successfull', null, res);
                         }
