@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/dannguyen99/vmo_typescript_demo#readme",
   "dependencies": {
+    "@types/mongodb": "^3.5.32",
     "body": "^5.1.0",
     "express": "^4.17.1",
+    "mongodb": "^3.6.2",
     "mongoose": "^5.10.11",
     "parser": "^0.1.4"
   },
