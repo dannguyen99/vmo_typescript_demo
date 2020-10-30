@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
-import { insufficientParameters, mongoError, successResponse, failureResponse } from '../modules/common/service';
-import { IUser } from '../modules/users/model';
+import { insufficientParameters, mongoError, successResponse, failureResponse, badRequestError } from '../modules/common/service';
+import { User, IUser } from '../modules/users/model';
 import UserService from '../modules/users/service';
 import e = require('express');
+import ModificationNote from '../modules/common/model'
+import { validate } from 'class-validator';
 
 export class UserController {
 
@@ -10,30 +12,33 @@ export class UserController {
 
     public create_user(req: Request, res: Response) {
         // this check whether all the filds were send through the erquest or not
-        if (req.body.name && req.body.name.first_name && req.body.name.middle_name && req.body.name.last_name &&
+        if (req.body.name &&
             req.body.email &&
             req.body.phone_number &&
             req.body.gender) {
-            const user_params: IUser = {
-                name: {
-                    first_name: req.body.name.first_name,
-                    middle_name: req.body.name.middle_name,
-                    last_name: req.body.name.last_name
-                },
+            const user: IUser = {
+                name: req.body.name,
                 email: req.body.email,
                 phone_number: req.body.phone_number,
                 gender: req.body.gender,
-                modification_notes: [{
+                modification_notes: [new ModificationNote({
                     modified_on: new Date(Date.now()),
                     modified_by: null,
                     modification_note: 'New user created'
-                }]
+                })]
             };
-            this.user_service.createUser(user_params, (err: any, user_data: IUser) => {
-                if (err) {
-                    mongoError(err, res);
+            const user_params = new User(user);
+            validate(user_params, { validationError: { target: false } }).then(errors => {
+                if (errors.length > 0) {
+                    badRequestError(errors, res);
                 } else {
-                    successResponse('create user successfull', user_data, res);
+                    this.user_service.createUser(user_params, (err: any, user_data: IUser) => {
+                        if (err) {
+                            mongoError(err, res);
+                        } else {
+                            successResponse('create user successfull', user_data, res);
+                        }
+                    });
                 }
             });
         } else {
@@ -59,7 +64,7 @@ export class UserController {
 
     public update_user(req: Request, res: Response) {
         if (req.params.id &&
-            req.body.name || req.body.name.first_name || req.body.name.middle_name || req.body.name.last_name ||
+            req.body.name ||
             req.body.email ||
             req.body.phone_number ||
             req.body.gender) {
@@ -73,24 +78,27 @@ export class UserController {
                         modified_by: null,
                         modification_note: 'User data updated'
                     });
-                    const user_params: IUser = {
+                    const user: IUser = {
                         _id: req.params.id,
-                        name: req.body.name ? {
-                            first_name: req.body.name.first_name ? req.body.name.first_name : user_data.name.first_name,
-                            middle_name: req.body.name.first_name ? req.body.name.middle_name : user_data.name.middle_name,
-                            last_name: req.body.name.first_name ? req.body.name.last_name : user_data.name.last_name
-                        } : user_data.name,
+                        name: req.body.name ? req.body.name : user_data.name,
                         email: req.body.email ? req.body.email : user_data.email,
                         phone_number: req.body.phone_number ? req.body.phone_number : user_data.phone_number,
                         gender: req.body.gender ? req.body.gender : user_data.gender,
                         is_deleted: req.body.is_deleted ? req.body.is_deleted : user_data.is_deleted,
                         modification_notes: user_data.modification_notes
                     };
-                    this.user_service.updateUser(user_params, (error: any) => {
-                        if (error) {
-                            mongoError(error, res);
+                    const user_params = new User(user);
+                    validate(user_params, { validationError: { target: false } }).then(errors => {
+                        if (errors.length > 0) {
+                            badRequestError(errors, res);
                         } else {
-                            successResponse('update user successfull', null, res);
+                            this.user_service.updateUser(user_params, (error: any) => {
+                                if (error) {
+                                    mongoError(error, res);
+                                } else {
+                                    successResponse('update user successfull', null, res);
+                                }
+                            });
                         }
                     });
                 } else {

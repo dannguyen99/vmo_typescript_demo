@@ -1,16 +1,9 @@
 import * as mongoose from 'mongoose';
-import { ModificationNote } from '../common/model';
 
 const Schema = mongoose.Schema;
 
 const schema = new Schema({
-  name: {
-    type: {
-      first_name: String,
-      middle_name: String,
-      last_name: String
-    }
-  },
+  name: String,
   email: String,
   phone_number: String,
   gender: String,
@@ -18,7 +11,11 @@ const schema = new Schema({
     type: Boolean,
     default: false
   },
-  modification_notes: [ModificationNote]
+  modification_notes: [{
+    modified_on: Date,
+    modified_by: String,
+    modification_note: String
+  }]
 });
 
 export default mongoose.model('users', schema);

@@ -21,7 +21,9 @@
   "homepage": "https://github.com/dannguyen99/vmo_typescript_demo#readme",
   "dependencies": {
     "@types/mongodb": "^3.5.32",
+    "@types/mongoose": "^5.7.36",
     "body": "^5.1.0",
+    "class-validator": "^0.12.2",
     "express": "^4.17.1",
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.11",

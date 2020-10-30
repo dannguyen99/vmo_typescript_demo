@@ -32,3 +32,11 @@ export function mongoError(err: any, res: Response) {
         DATA: err
     });
 }
+
+export function badRequestError(err: any, res: Response) {
+    res.status(response_status_codes.bad_request).json({
+        STATUS: 'FAILURE',
+        MESSAGE: 'Bad request',
+        DATA: err
+    });
+}
